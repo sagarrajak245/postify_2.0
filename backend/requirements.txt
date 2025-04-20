@@ -1,0 +1,47 @@
+# Core Flask
+Flask==2.3.2
+Flask-Cors==4.0.0
+python-dotenv==1.0.0
+
+# Authentication & Security
+Flask-JWT-Extended==4.5.2
+supabase==2.3.1
+pyjwt==2.8.0
+passlib==1.7.4
+
+# Database
+psycopg2-binary==2.9.7  # For PostgreSQL
+sqlalchemy==2.0.20
+
+# Email Processing
+google-api-python-client==2.104.0
+google-auth-oauthlib==1.0.0
+google-auth==2.22.0
+langchain==0.0.346
+pinecone-client==2.2.4
+
+# AI Processing
+openai==0.28.1
+numpy==1.26.1
+pandas==2.1.1
+
+# Social Media APIs
+tweepy==4.14.0
+requests==2.31.0
+
+# File Storage
+cloudinary==1.37.0
+Pillow==10.0.1
+
+# Background Tasks 
+redis==4.6.0
+rq==1.15.1
+
+# Notifications
+flask-mail==0.9.1
+pywebpush==1.13.0
+
+# Development & Testing
+pytest==7.4.2
+pytest-cov==4.1.0
+flake8==6.1.0
