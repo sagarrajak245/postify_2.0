@@ -1,8 +1,6 @@
-
 from flask import Blueprint, request, jsonify
-from services.auth_service import signup_user, login_user
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from services.auth_service import signup_user, login_user, google_signin, get_user_profile
+from services.auth_service import signup_user, login_user, google_signin, supabase
 from services.db_service import get_db_connection
 
 db_bp = Blueprint('database', __name__)
@@ -21,13 +19,11 @@ def test_db():
         return jsonify({"status": "error", "message": str(e)}), 500
     
 #auth routes
-
-
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
-    data = request.get_json()
+    data = request.get_json()  
     if not data or 'email' not in data or 'password' not in data:
         return jsonify({'error': 'Missing required fields'}), 400
     
@@ -85,21 +81,3 @@ def google_auth():
         'access_token': access_token,
         'user': response.user.dict() if hasattr(response, 'user') else {}
     }), 200
-
-@auth_bp.route('/profile', methods=['GET'])
-@jwt_required()
-def get_profile():
-    current_user_email = get_jwt_identity()
-    
-    # Get user ID from Supabase based on email
-    user_data = supabase.auth.get_user_by_email(current_user_email)
-    if not user_data or not hasattr(user_data, 'user'):
-        return jsonify({'error': 'User not found'}), 404
-    
-    user_id = user_data.user.id
-    profile = get_user_profile(user_id)
-    
-    if not profile or 'error' in profile:
-        return jsonify({'error': 'Profile not found'}), 404
-    
-    return jsonify({'profile': profile}), 200

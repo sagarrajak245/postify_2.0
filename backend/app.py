@@ -1,5 +1,6 @@
+from routes.routes import db_bp, auth_bp
+from routes.profile_routes import profile_bp
 from flask import Flask
-from routes import db_bp, auth_bp
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
@@ -9,7 +10,7 @@ from datetime import timedelta
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__)  
 
 # Configure app
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -26,6 +27,7 @@ jwt = JWTManager(app)
 # Register blueprints
 app.register_blueprint(db_bp, url_prefix='/api/db')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
+app.register_blueprint(profile_bp, url_prefix='/api/profile')  # Register the profile blueprint
 
 # Health check endpoint
 @app.route('/')

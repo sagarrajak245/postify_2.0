@@ -3,7 +3,7 @@ from flask import jsonify
 import os
 import requests
 from google.oauth2 import id_token 
-from google.auth.transport import requests as google_requests
+from google.auth.transport import requests as google_requests 
 
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'))
 
@@ -15,20 +15,13 @@ def signup_user(name, email, password):
             "password": password
         })
         
-        # If successful, add additional user info to profiles table
-        if hasattr(response, 'user') and response.user:
-            user_id = response.user.id
-            # Insert into a profiles table with the name
-            data = supabase.table('profiles').insert({
-                "id": user_id,
-                "name": name,
-                "email": email
-            }).execute()
-            
-            # Merge the profile data with the response
-            return response
+        # Debug
+        print("Supabase response:", response)
+        
+        # Just return the auth response
         return response
     except Exception as e:
+        print("Error in signup:", str(e))
         return {'error': str(e)}
 
 def login_user(email, password):
@@ -38,17 +31,9 @@ def login_user(email, password):
             "password": password
         })
         
-        # Get additional user data from profiles if available
-        if hasattr(response, 'user') and response.user:
-            user_id = response.user.id
-            profile_data = supabase.table('profiles').select('*').eq('id', user_id).execute()
-            
-            # Add profile data to the response if available
-            if profile_data.data and len(profile_data.data) > 0:
-                response.user.profile = profile_data.data[0]
-                
         return response
     except Exception as e:
+        print("Error in login:", str(e))
         return {'error': str(e)}
 
 def google_signin(token):
@@ -72,34 +57,12 @@ def google_signin(token):
                 "id_token": token
             })
             
-            # If this is a new user, we might need to add profile data
-            if hasattr(response, 'user') and response.user:
-                user_id = response.user.id
-                
-                # Check if profile exists
-                profile_check = supabase.table('profiles').select('*').eq('id', user_id).execute()
-                
-                if not profile_check.data or len(profile_check.data) == 0:
-                    # Create new profile
-                    supabase.table('profiles').insert({
-                        "id": user_id,
-                        "name": name,
-                        "email": email
-                    }).execute()
-            
             return response
-        except ValueError:
+        except ValueError as ve:
             # Invalid token
+            print("Google token validation error:", str(ve))
             return {'error': 'Invalid Google token'}
-            
+        
     except Exception as e:
-        return {'error': str(e)}
-
-def get_user_profile(user_id):
-    try:
-        profile_data = supabase.table('profiles').select('*').eq('id', user_id).execute()
-        if profile_data.data and len(profile_data.data) > 0:
-            return profile_data.data[0]
-        return None
-    except Exception as e:
+        print("Error in Google signin:", str(e))
         return {'error': str(e)}
