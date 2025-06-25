@@ -4,6 +4,8 @@ import os
 import requests
 from google.oauth2 import id_token 
 from google.auth.transport import requests as google_requests 
+from dotenv import load_dotenv
+load_dotenv()
 
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'))
 
